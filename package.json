@@ -1,0 +1,25 @@
+{
+  "name": "logseq-task-transition-plugin",
+  "version": "0.1.0",
+  "description": "Automatically adds custom properties to tasks on status transition in LogSeq",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "create-icon": "node scripts/create-icon.cjs"
+  },
+  "devDependencies": {
+    "@logseq/libs": "0.0.17",
+    "jimp": "^0.22.10",
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "vitest": "^1.6.0"
+  },
+  "logseq": {
+    "id": "logseq-task-transition-plugin",
+    "title": "Task Transition Properties",
+    "icon": "icon.png"
+  }
+}

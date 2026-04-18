@@ -156,6 +156,15 @@ describe("parseCustomRules", () => {
       parseCustomRules('[{"from":"TODO","to":"DOING"}]')
     ).toHaveLength(0);
   });
+
+  it("filters out entries with invalid marker values for 'from' or 'to'", () => {
+    expect(
+      parseCustomRules('[{"from":"BOGUS","to":"DOING","property":"started"}]')
+    ).toHaveLength(0);
+    expect(
+      parseCustomRules('[{"from":"TODO","to":"INVALID","property":"started"}]')
+    ).toHaveLength(0);
+  });
 });
 
 // ── isPageExcluded ────────────────────────────────────────────────────────────
@@ -180,5 +189,13 @@ describe("isPageExcluded", () => {
   it("does not match a partial name without the prefix separator", () => {
     // 'temp' should NOT match page 'templates/daily'
     expect(isPageExcluded("templates/daily", ["temp"])).toBe(false);
+  });
+
+  it("matches case-insensitively for exact page names", () => {
+    expect(isPageExcluded("Inbox", ["inbox"])).toBe(true);
+  });
+
+  it("matches case-insensitively for namespace prefixes", () => {
+    expect(isPageExcluded("Templates/Daily", ["templates/"])).toBe(true);
   });
 });

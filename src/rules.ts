@@ -1,4 +1,5 @@
 import type { TaskMarker } from "./detector";
+import { VALID_MARKERS } from "./detector";
 
 export interface Rule {
   from: TaskMarker;
@@ -50,13 +51,15 @@ export function parseCustomRules(json: string): Rule[] {
     if (!Array.isArray(parsed)) return [];
     return parsed
       .filter(
-        (r) =>
-          typeof r === "object" &&
-          r !== null &&
-          typeof (r as Record<string, unknown>).from === "string" &&
-          typeof (r as Record<string, unknown>).to === "string" &&
-          typeof (r as Record<string, unknown>).property === "string"
-      )
+      (r) =>
+        typeof r === "object" &&
+        r !== null &&
+        typeof (r as Record<string, unknown>).from === "string" &&
+        typeof (r as Record<string, unknown>).to === "string" &&
+        typeof (r as Record<string, unknown>).property === "string" &&
+        VALID_MARKERS.has(((r as Record<string, unknown>).from as string).toUpperCase()) &&
+        VALID_MARKERS.has(((r as Record<string, unknown>).to as string).toUpperCase())
+    )
       .map((r) => ({
         from: ((r as Record<string, unknown>).from as string).toUpperCase() as TaskMarker,
         to: ((r as Record<string, unknown>).to as string).toUpperCase() as TaskMarker,
@@ -91,7 +94,9 @@ export function matchRules(
  * or starts with it when the entry ends with "/" (namespace prefix like "templates/").
  */
 export function isPageExcluded(pageName: string, excludedPages: string[]): boolean {
-  return excludedPages.some(
-    (ex) => pageName === ex || (ex.endsWith("/") && pageName.startsWith(ex))
-  );
+  const lowerPageName = pageName.toLowerCase();
+  return excludedPages.some((ex) => {
+    const lowerEx = ex.toLowerCase();
+    return lowerPageName === lowerEx || (ex.endsWith("/") && lowerPageName.startsWith(lowerEx));
+  });
 }

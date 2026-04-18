@@ -27,7 +27,7 @@ export interface Transition {
   to: TaskMarker;
 }
 
-const VALID_MARKERS = new Set<string>([
+export const VALID_MARKERS = new Set<string>([
   "TODO", "DOING", "DONE", "WAITING", "LATER", "NOW", "CANCELLED",
 ]);
 

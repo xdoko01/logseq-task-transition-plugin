@@ -15,6 +15,9 @@ export type TaskMarker =
  * - value: the attribute's value
  * - transactionId: numeric ID of the DB transaction
  * - added: true = this value was asserted; false = it was retracted
+ *
+ * Mirrors @logseq/libs IDatom but uses `unknown` for value (stricter than IDatom's `any`)
+ * and is defined locally to keep this module free of LogSeq runtime dependencies.
  */
 export type Datom = [number, string, unknown, number, boolean];
 
@@ -23,6 +26,10 @@ export interface Transition {
   from: TaskMarker;
   to: TaskMarker;
 }
+
+const VALID_MARKERS = new Set<string>([
+  "TODO", "DOING", "DONE", "WAITING", "LATER", "NOW", "CANCELLED",
+]);
 
 /**
  * Scans the datoms from a DB change event and returns every block whose
@@ -40,6 +47,7 @@ export function detectTransitionsFromDatoms(
 
   for (const [entityId, attribute, value, , added] of datoms) {
     if (attribute !== ":block/marker") continue;
+    if (typeof value !== "string" || !VALID_MARKERS.has(value)) continue;
     if (!byEntity.has(entityId)) byEntity.set(entityId, {});
     const entry = byEntity.get(entityId)!;
     if (added) {

@@ -3,8 +3,8 @@
   "title": "Task Transition Properties",
   "description": "Automatically adds properties (started, completed, etc.) to tasks when their status changes. Fully configurable via plugin settings.",
   "author": "Otakar Dokoupil",
-  "repo": "YOUR_GITHUB_USERNAME/logseq-task-transition-plugin",
-  "icon": "https://raw.githubusercontent.com/YOUR_GITHUB_USERNAME/logseq-task-transition-plugin/main/icon.png",
+  "repo": "xdoko01/logseq-task-transition-plugin",
+  "icon": "https://raw.githubusercontent.com/xdoko01/logseq-task-transition-plugin/main/icon.png",
   "theme": false,
   "effect": false,
   "sponsors": []

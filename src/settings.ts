@@ -1,21 +1,8 @@
+import type { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin.user";
 import type { Settings } from "./rules";
 
-/**
- * SettingDef describes one item in the LogSeq plugin settings panel.
- * This matches the shape expected by logseq.useSettingsSchema().
- */
-interface SettingDef {
-  key: string;
-  type: "boolean" | "string" | "number" | "enum";
-  default: boolean | string | number;
-  title: string;
-  description: string;
-  enumChoices?: string[];
-  enumPicker?: "select" | "radio" | "checkbox";
-}
-
 /** Schema registered with LogSeq — drives the Settings UI panel automatically */
-export const SETTINGS_SCHEMA: SettingDef[] = [
+export const SETTINGS_SCHEMA: SettingSchemaDesc[] = [
   {
     key: "enableRule_TODO_DOING",
     type: "boolean",
@@ -79,6 +66,7 @@ export const SETTINGS_SCHEMA: SettingDef[] = [
  * Provides safe defaults in case a setting hasn't been initialised yet.
  */
 export function getSettings(): Settings {
+  // settings is guaranteed non-null after logseq.ready() — the only call site
   const s = logseq.settings!;
   return {
     enableRule_TODO_DOING: (s["enableRule_TODO_DOING"] as boolean) ?? true,

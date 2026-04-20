@@ -14,7 +14,9 @@ export async function upsertProperty(
 ): Promise<void> {
   if (!overwrite) {
     const block = await logseq.Editor.getBlock(blockUuid, { includeChildren: false });
-    if (block?.properties?.[property] != null) return;
+    if (!block) return; // block deleted between DB event and fetch — nothing to do
+    // != null catches both null and undefined — property exists if either is returned
+    if (block.properties?.[property] != null) return;
   }
   await logseq.Editor.upsertBlockProperty(blockUuid, property, value);
 }

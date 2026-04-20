@@ -37,6 +37,18 @@ npm run build
 
 Output: `dist/index.js` — the single bundled file LogSeq loads.
 
+## Regenerating the icon
+
+The placeholder `icon.png` was generated with:
+
+```bash
+npm run create-icon
+```
+
+This creates a 128×128 solid blue PNG. To change the colour or design, edit
+`scripts/create-icon.cjs` and re-run the command.
+Replace `icon.png` with a proper icon before submitting to the marketplace.
+
 ## Loading in LogSeq (developer mode)
 
 1. Build the plugin first (`npm run build`)

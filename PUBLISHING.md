@@ -57,11 +57,24 @@ gh repo clone YOUR_GITHUB_USERNAME/marketplace
 cd marketplace
 ```
 
+> **Important:** Before copying `marketplace/package.json`, verify that
+> `YOUR_GITHUB_USERNAME` has been replaced with your real GitHub username.
+> You can check with: `grep YOUR_GITHUB_USERNAME marketplace/package.json`
+> (should return no output if correctly updated)
+
 ### 3c. Add the plugin entry
 
+**In PowerShell:**
+```powershell
+New-Item -ItemType Directory -Force -Path packages\logseq-task-transition-plugin
+Copy-Item C:\Users\Otakar\OneDrive\Personal\JavaScript\logseq-task-transition-plugin\marketplace\package.json `
+  packages\logseq-task-transition-plugin\package.json
+```
+
+**In Git Bash:**
 ```bash
 mkdir -p packages/logseq-task-transition-plugin
-cp /path/to/logseq-task-transition-plugin/marketplace/package.json \
+cp "/c/Users/Otakar/OneDrive/Personal/JavaScript/logseq-task-transition-plugin/marketplace/package.json" \
    packages/logseq-task-transition-plugin/package.json
 ```
 
@@ -70,7 +83,7 @@ cp /path/to/logseq-task-transition-plugin/marketplace/package.json \
 ```bash
 git add packages/logseq-task-transition-plugin/package.json
 git commit -m "feat: add logseq-task-transition-plugin"
-git push origin main
+git push origin HEAD
 ```
 
 ### 3e. Open a pull request

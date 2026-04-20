@@ -32,40 +32,46 @@ async function main(): Promise<void> {
   // Validate custom rules on startup and warn once if malformed
   validateCustomRules(getSettings().customRules);
 
+  // Reset warning flag when settings change so the user gets feedback if they fix then re-break the JSON
+  logseq.onSettingsChanged(() => {
+    customRulesWarningShown = false;
+    validateCustomRules(getSettings().customRules);
+  });
+
   logseq.DB.onChanged(async ({ blocks, txData }) => {
-    const settings = getSettings();
-    const activeRules = getActiveRules(settings);
+    try {
+      const settings = getSettings();
+      const activeRules = getActiveRules(settings);
 
-    // Detect which blocks changed their task marker
-    const transitions = detectTransitionsFromDatoms(
-      txData as Datom[],
-      blocks.map((b) => ({ id: b.id, uuid: b.uuid }))
-    );
+      const transitions = detectTransitionsFromDatoms(
+        txData as Datom[],
+        blocks.map((b) => ({ id: b.id, uuid: b.uuid }))
+      );
 
-    // Compute the datetime string once for all transitions in this batch
-    const value = formatDatetime(new Date(), settings.dateFormat === "datetime");
+      const value = formatDatetime(new Date(), settings.dateFormat === "datetime");
 
-    for (const { blockUuid, from, to } of transitions) {
-      const matched = matchRules(from, to, activeRules);
-      if (matched.length === 0) continue;
+      for (const { blockUuid, from, to } of transitions) {
+        const matched = matchRules(from, to, activeRules);
+        if (matched.length === 0) continue;
 
-      // Fetch the block to get its page ID (needed for exclusion check)
-      const block = await logseq.Editor.getBlock(blockUuid, { includeChildren: false });
-      if (!block?.page) continue;
+        const block = await logseq.Editor.getBlock(blockUuid, { includeChildren: false });
+        if (!block?.page) continue;
 
-      const page = await logseq.Editor.getPage(block.page.id);
-      if (!page) continue;
+        const page = await logseq.Editor.getPage(block.page.id);
+        if (!page) continue;
 
-      if (isPageExcluded(page.name, settings.excludedPages)) continue;
+        if (isPageExcluded(page.name, settings.excludedPages)) continue;
 
-      for (const rule of matched) {
-        try {
-          await upsertProperty(blockUuid, rule.property, value, rule.overwrite);
-        } catch (err) {
-          // Never let a property-write failure surface to the user
-          console.error("[task-transition] Failed to upsert property:", err);
+        for (const rule of matched) {
+          try {
+            await upsertProperty(blockUuid, rule.property, value, rule.overwrite, block);
+          } catch (err) {
+            console.error("[task-transition] Failed to upsert property:", err);
+          }
         }
       }
+    } catch (err) {
+      console.error("[task-transition] Unexpected error in onChanged:", err);
     }
   });
 }

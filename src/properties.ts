@@ -1,19 +1,21 @@
 /**
  * Adds or updates a block property via the LogSeq Editor API.
  *
- * @param blockUuid  UUID of the block to update
- * @param property   Property name (without "::" suffix), e.g. "started"
- * @param value      Property value string, e.g. "[[Apr 17th, 2026]] 12:05"
- * @param overwrite  If false, skip the update when the property already has a value
+ * @param blockUuid     UUID of the block to update
+ * @param property      Property name (without "::" suffix), e.g. "started"
+ * @param value         Property value string, e.g. "[[Apr 17th, 2026]] 12:05"
+ * @param overwrite     If false, skip the update when the property already has a value
+ * @param cachedBlock   Optional pre-fetched block to avoid a redundant getBlock call
  */
 export async function upsertProperty(
   blockUuid: string,
   property: string,
   value: string,
-  overwrite: boolean
+  overwrite: boolean,
+  cachedBlock?: Awaited<ReturnType<typeof logseq.Editor.getBlock>>
 ): Promise<void> {
   if (!overwrite) {
-    const block = await logseq.Editor.getBlock(blockUuid, { includeChildren: false });
+    const block = cachedBlock ?? await logseq.Editor.getBlock(blockUuid, { includeChildren: false });
     if (!block) return; // block deleted between DB event and fetch — nothing to do
     // != null catches both null and undefined — property exists if either is returned
     if (block.properties?.[property] != null) return;

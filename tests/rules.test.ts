@@ -9,9 +9,13 @@ import type { Settings } from "../src/rules";
 
 const allEnabled: Settings = {
   enableRule_TODO_DOING: true,
+  overwriteRule_TODO_DOING: false,
   enableRule_LATER_NOW: true,
+  overwriteRule_LATER_NOW: false,
   enableRule_DOING_DONE: true,
+  overwriteRule_DOING_DONE: true,
   enableRule_NOW_DONE: true,
+  overwriteRule_NOW_DONE: true,
   customRules: "[]",
   excludedPages: [],
   dateFormat: "datetime",
@@ -50,8 +54,24 @@ describe("getActiveRules", () => {
     expect(rules).toHaveLength(4);
   });
 
-  it("default rules always have overwrite: true", () => {
-    getActiveRules(allEnabled).forEach((r) => expect(r.overwrite).toBe(true));
+  it("started rules have overwrite: false, completed rules have overwrite: true (defaults)", () => {
+    const rules = getActiveRules(allEnabled);
+    rules.forEach((r) => {
+      if (r.property === "started") expect(r.overwrite).toBe(false);
+      if (r.property === "completed") expect(r.overwrite).toBe(true);
+    });
+  });
+
+  it("overwriteRule_TODO_DOING: true makes the TODO→DOING rule overwrite", () => {
+    const rules = getActiveRules({ ...allEnabled, overwriteRule_TODO_DOING: true });
+    const rule = rules.find((r) => r.from === "TODO" && r.to === "DOING");
+    expect(rule?.overwrite).toBe(true);
+  });
+
+  it("overwriteRule_DOING_DONE: false makes the DOING→DONE rule not overwrite", () => {
+    const rules = getActiveRules({ ...allEnabled, overwriteRule_DOING_DONE: false });
+    const rule = rules.find((r) => r.from === "DOING" && r.to === "DONE");
+    expect(rule?.overwrite).toBe(false);
   });
 });
 

@@ -46,7 +46,7 @@ export function detectTransitionsFromDatoms(
   const byEntity = new Map<number, { from?: TaskMarker; to?: TaskMarker }>();
 
   for (const [entityId, attribute, value, , added] of datoms) {
-    if (attribute !== ":block/marker") continue;
+    if (attribute !== "block/marker") continue;
     if (typeof value !== "string" || !VALID_MARKERS.has(value)) continue;
     if (!byEntity.has(entityId)) byEntity.set(entityId, {});
     const entry = byEntity.get(entityId)!;

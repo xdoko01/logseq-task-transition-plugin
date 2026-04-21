@@ -11,9 +11,13 @@ export interface Rule {
 /** Shape of the settings object consumed by rules.ts — mirrors LogSeq plugin settings */
 export interface Settings {
   enableRule_TODO_DOING: boolean;
+  overwriteRule_TODO_DOING: boolean;
   enableRule_LATER_NOW: boolean;
+  overwriteRule_LATER_NOW: boolean;
   enableRule_DOING_DONE: boolean;
+  overwriteRule_DOING_DONE: boolean;
   enableRule_NOW_DONE: boolean;
+  overwriteRule_NOW_DONE: boolean;
   /** JSON string — array of custom Rule objects */
   customRules: string;
   /** Already split and trimmed from comma-separated setting string */
@@ -22,23 +26,29 @@ export interface Settings {
 }
 
 const DEFAULT_RULES: Rule[] = [
-  { from: "TODO",  to: "DOING", property: "started",   overwrite: true },
-  { from: "LATER", to: "NOW",   property: "started",   overwrite: true },
+  { from: "TODO",  to: "DOING", property: "started",   overwrite: false },
+  { from: "LATER", to: "NOW",   property: "started",   overwrite: false },
   { from: "DOING", to: "DONE",  property: "completed", overwrite: true },
   { from: "NOW",   to: "DONE",  property: "completed", overwrite: true },
 ];
 
-type DefaultRuleKey =
+type EnableRuleKey =
   | "enableRule_TODO_DOING"
   | "enableRule_LATER_NOW"
   | "enableRule_DOING_DONE"
   | "enableRule_NOW_DONE";
 
-const RULE_ENABLE_KEYS: Array<{ key: DefaultRuleKey; index: number }> = [
-  { key: "enableRule_TODO_DOING", index: 0 },
-  { key: "enableRule_LATER_NOW",  index: 1 },
-  { key: "enableRule_DOING_DONE", index: 2 },
-  { key: "enableRule_NOW_DONE",   index: 3 },
+type OverwriteRuleKey =
+  | "overwriteRule_TODO_DOING"
+  | "overwriteRule_LATER_NOW"
+  | "overwriteRule_DOING_DONE"
+  | "overwriteRule_NOW_DONE";
+
+const RULE_KEYS: Array<{ enableKey: EnableRuleKey; overwriteKey: OverwriteRuleKey; index: number }> = [
+  { enableKey: "enableRule_TODO_DOING", overwriteKey: "overwriteRule_TODO_DOING", index: 0 },
+  { enableKey: "enableRule_LATER_NOW",  overwriteKey: "overwriteRule_LATER_NOW",  index: 1 },
+  { enableKey: "enableRule_DOING_DONE", overwriteKey: "overwriteRule_DOING_DONE", index: 2 },
+  { enableKey: "enableRule_NOW_DONE",   overwriteKey: "overwriteRule_NOW_DONE",   index: 3 },
 ];
 
 /**
@@ -74,8 +84,10 @@ export function parseCustomRules(json: string): Rule[] {
 /** Returns the combined list of enabled default rules plus any valid custom rules */
 export function getActiveRules(settings: Settings): Rule[] {
   const active: Rule[] = [];
-  for (const { key, index } of RULE_ENABLE_KEYS) {
-    if (settings[key]) active.push(DEFAULT_RULES[index]);
+  for (const { enableKey, overwriteKey, index } of RULE_KEYS) {
+    if (settings[enableKey]) {
+      active.push({ ...DEFAULT_RULES[index], overwrite: settings[overwriteKey] });
+    }
   }
   return [...active, ...parseCustomRules(settings.customRules)];
 }

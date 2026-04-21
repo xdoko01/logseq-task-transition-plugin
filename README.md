@@ -14,8 +14,7 @@ immediately adds `started:: [[Apr 17th, 2026]] 12:05` to that block.
 | `DOING` → `DONE` | `completed:: [[date]] HH:mm` |
 | `NOW` → `DONE` | `completed:: [[date]] HH:mm` |
 
-Properties are **always overwritten** — cycling a task back and forth updates
-the timestamp each time.
+By default, `started` is **set once and never changed** — pausing and resuming a task preserves the original start time. `completed` is **always updated** to the latest finish time. Both behaviours are configurable per rule in the plugin settings.
 
 ## Installation
 
@@ -34,15 +33,19 @@ the timestamp each time.
 
 Open LogSeq → Settings → Plugins → Task Transition Properties.
 
-| Setting | Description |
-|---|---|
-| **TODO → DOING: add 'started'** | Toggle this default rule on/off |
-| **LATER → NOW: add 'started'** | Toggle this default rule on/off |
-| **DOING → DONE: add 'completed'** | Toggle this default rule on/off |
-| **NOW → DONE: add 'completed'** | Toggle this default rule on/off |
-| **Custom rules (JSON)** | Add your own transition rules (see below) |
-| **Excluded pages** | Comma-separated pages/namespaces to skip |
-| **Date format** | `datetime` (date + time) or `date` (date only) |
+| Setting | Default | Description |
+|---|---|---|
+| **TODO → DOING: add 'started'** | on | Toggle this default rule on/off |
+| **TODO → DOING: overwrite 'started' if already set** | off | When off, `started` is set only the first time; turn on to update it on every resume |
+| **LATER → NOW: add 'started'** | on | Toggle this default rule on/off |
+| **LATER → NOW: overwrite 'started' if already set** | off | Same as above for the LATER→NOW variant |
+| **DOING → DONE: add 'completed'** | on | Toggle this default rule on/off |
+| **DOING → DONE: overwrite 'completed' if already set** | on | When on, `completed` is always updated to the latest finish time; turn off to keep the original |
+| **NOW → DONE: add 'completed'** | on | Toggle this default rule on/off |
+| **NOW → DONE: overwrite 'completed' if already set** | on | Same as above for the NOW→DONE variant |
+| **Custom rules (JSON)** | — | Add your own transition rules (see below) |
+| **Excluded pages** | — | Comma-separated pages/namespaces to skip |
+| **Date format** | datetime | `datetime` (date + time) or `date` (date only) |
 
 ### Adding custom rules
 

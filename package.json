@@ -1,6 +1,6 @@
 {
   "name": "logseq-task-transition-plugin",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Automatically adds custom properties to tasks on status transition in LogSeq",
   "main": "dist/index.js",
   "scripts": {

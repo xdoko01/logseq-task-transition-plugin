@@ -2,9 +2,6 @@
 
 Follow these steps to release a new version and submit to the LogSeq marketplace.
 
-> **Before you start:** Replace `YOUR_GITHUB_USERNAME` in `marketplace/package.json`
-> with your actual GitHub username.
-
 ---
 
 ## Step 1: Build and package
@@ -38,66 +35,47 @@ gh release create v0.1.0 dist.zip \
 ```
 
 After this command, the release appears at:
-`https://github.com/YOUR_GITHUB_USERNAME/logseq-task-transition-plugin/releases/tag/v0.1.0`
+`https://github.com/xdoko01/logseq-task-transition-plugin/releases/tag/v0.1.0`
 
 ---
 
-## Step 3: Submit to the LogSeq Marketplace
+## Step 3: Submit to the LogSeq Marketplace (first release only)
 
-The marketplace is a GitHub repository: https://github.com/logseq/marketplace
+The marketplace is a GitHub repository: https://github.com/logseq/marketplace.
+Each plugin is a folder `packages/<plugin-id>/` containing a `manifest.json`
+(see `marketplace/manifest.json` here) and the icon file it references.
 
-### 3a. Fork the marketplace repo
+Marketplace requirements: the latest release has a zip attached, and the README
+explains the plugin and shows at least one image/GIF of it in action.
 
-Go to https://github.com/logseq/marketplace and click **Fork**.
+### 3a. Sync your fork and create a branch
 
-### 3b. Clone your fork
+Fork https://github.com/logseq/marketplace once (`xdoko01/marketplace`), then:
 
 ```bash
-gh repo clone YOUR_GITHUB_USERNAME/marketplace
+gh repo sync xdoko01/marketplace --source logseq/marketplace --force
+gh repo clone xdoko01/marketplace
 cd marketplace
+git checkout -b add-task-transition-plugin
 ```
 
-> **Important:** Before copying `marketplace/package.json`, verify that
-> `YOUR_GITHUB_USERNAME` has been replaced with your real GitHub username.
-> You can check with: `grep YOUR_GITHUB_USERNAME marketplace/package.json`
-> (should return no output if correctly updated)
+### 3b. Add the plugin entry
 
-### 3c. Add the plugin entry
-
-**In PowerShell:**
-```powershell
-New-Item -ItemType Directory -Force -Path packages\logseq-task-transition-plugin
-Copy-Item C:\Users\Otakar\OneDrive\Personal\JavaScript\logseq-task-transition-plugin\marketplace\package.json `
-  packages\logseq-task-transition-plugin\package.json
-```
-
-**In Git Bash:**
 ```bash
+PLUGIN=/c/Users/Otakar/dev/logseq-task-transition-plugin
 mkdir -p packages/logseq-task-transition-plugin
-cp "/c/Users/Otakar/OneDrive/Personal/JavaScript/logseq-task-transition-plugin/marketplace/package.json" \
-   packages/logseq-task-transition-plugin/package.json
+cp "$PLUGIN/marketplace/manifest.json" packages/logseq-task-transition-plugin/manifest.json
+cp "$PLUGIN/icon.png" packages/logseq-task-transition-plugin/icon.png
 ```
 
-### 3d. Commit and push
+### 3c. Commit, push and open a pull request
 
 ```bash
-git add packages/logseq-task-transition-plugin/package.json
+git add packages/logseq-task-transition-plugin
 git commit -m "feat: add logseq-task-transition-plugin"
-git push origin HEAD
-```
+git push -u origin add-task-transition-plugin
 
-### 3e. Open a pull request
-
-```bash
-gh pr create \
-  --repo logseq/marketplace \
-  --title "feat: add logseq-task-transition-plugin" \
-  --body "Adds the Task Transition Properties plugin.
-
-Plugin repo: https://github.com/YOUR_GITHUB_USERNAME/logseq-task-transition-plugin
-
-This plugin automatically adds configurable properties to tasks when their
-status changes (e.g. TODO→DOING adds \`started\`, DOING→DONE adds \`completed\`)."
+gh pr create --repo logseq/marketplace --head xdoko01:add-task-transition-plugin   --title "feat: add logseq-task-transition-plugin"   --body "Adds the Task Transition Properties plugin: https://github.com/xdoko01/logseq-task-transition-plugin"
 ```
 
 The LogSeq team will review the PR. Once merged, the plugin appears in the marketplace.

@@ -5,6 +5,8 @@ Automatically adds properties to your tasks when their status changes.
 **Example:** When you click a `TODO` task to move it to `DOING`, the plugin
 immediately adds `started:: [[Apr 17th, 2026]] 12:05` to that block.
 
+![Demo: tasks gain started and completed properties as their status changes](docs/demo.gif)
+
 ## Default behaviour
 
 | Status change | Property added / updated |
